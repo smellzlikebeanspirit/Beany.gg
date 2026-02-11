@@ -9,32 +9,277 @@
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: radial-gradient(circle at top, #0f1630, #090d1a 60%);
+  background: radial-gradient(circle at top, #1a1f3a, #0a0f1f 60%);
   color: #ffffff;
 }
 
+/* Main Title */
 h1 {
   text-align: center;
   padding: 25px;
-  font-size: 28px;
-  background: linear-gradient(90deg, #ffb347, #ff8c00);
+  font-size: 30px;
+  background: linear-gradient(90deg, #ffb347, #ff8c00, #9d4edd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* Bracket Layout */
 .bracket {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
   padding: 20px;
-  align-items: center;
+  align-items: center; /* 🔥 Center columns vertically */
+  min-height: 80vh;
 }
 
 .round {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 30px;
   align-items: center;
+  justify-content: center; /* 🔥 Center matches inside column */
+}
+
+/* ROUND TITLES */
+.round-title {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 14px;
+  letter-spacing: 1px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Round Colors */
+.round1 .round-title {
+  background: linear-gradient(90deg, #ffb347, #ff8c00);
+  box-shadow: 0 0 15px rgba(255,140,0,0.5);
+}
+
+.round2 .round-title {
+  background: linear-gradient(90deg, #9d4edd, #c77dff);
+  box-shadow: 0 0 15px rgba(157,78,221,0.5);
+}
+
+.round3 .round-title {
+  background: linear-gradient(90deg, #00d4ff, #0096c7);
+  box-shadow: 0 0 15px rgba(0,212,255,0.5);
+}
+
+.round4 .round-title {
+  background: linear-gradient(90deg, #ffb347, #9d4edd);
+  box-shadow: 0 0 25px rgba(255,179,71,0.6);
+  font-size: 22px;
+}
+
+/* Match Card */
+.match {
+  background: linear-gradient(145deg, #151c35, #0c1227);
+  border: 2px solid rgba(255, 165, 0, 0.2);
+  border-radius: 16px;
+  padding: 15px;
+  width: 230px;
+  transition: 0.3s ease;
+}
+
+/* Active Glow */
+.match.active {
+  animation: glowPulse 1.2s infinite;
+}
+
+@keyframes glowPulse {
+  0% {
+    border-color: #ffb347;
+    box-shadow: 0 0 5px #ffb347;
+  }
+  50% {
+    border-color: #9d4edd;
+    box-shadow: 0 0 20px #9d4edd;
+  }
+  100% {
+    border-color: #ffb347;
+    box-shadow: 0 0 5px #ffb347;
+  }
+}
+
+.team {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.team input[type="text"] {
+  width: 125px;
+  background: #0a0f20;
+  border: 1px solid #2a2f4a;
+  color: #fff;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.team input[type="number"] {
+  width: 60px;
+  background: #0a0f20;
+  border: 1px solid #2a2f4a;
+  color: #ffb347;
+  padding: 6px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #ffb347, #ff8c00);
+  border: none;
+  color: #1a1a1a;
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.locked {
+  background: #1c2340;
+  color: #ffb347;
+  cursor: default;
+}
+
+.champion {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(90deg, #ffb347, #9d4edd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>
+</head>
+
+<body>
+
+<h1>BEANY.GG - Bonus Buy Tournament </h1>
+
+<div class="bracket">
+  <div class="round round1" id="round1">
+    <div class="round-title">👣 The Feet 16</div>
+  </div>
+
+  <div class="round round2" id="round2">
+    <div class="round-title">🍽 The Elite Ate</div>
+  </div>
+
+  <div class="round round3" id="round3">
+    <div class="round-title">🏢 The Final Floor</div>
+  </div>
+
+  <div class="round round4" id="round4">
+    <div class="round-title">👑 The GG Championship</div>
+  </div>
+</div>
+
+<script>
+
+const slots = [
+  "Sugar Rush 1000","Hand of Anubis","Jaws of Justice","Seamen",
+  "Wanted","Supersized","Sweet Bonanza 1000","Ducks Happy Hour",
+  "Gates of Olympus","Outsourced","Le Fisherman","Rainbet Rush 1000",
+  "Dead West","Holy Hand Grenades 2","Brute Force Alien Onslaught","Twisted Lab"
+];
+
+let matchQueue = [];
+let currentMatchIndex = 0;
+
+function setActiveMatch() {
+  document.querySelectorAll('.match').forEach(m => m.classList.remove('active'));
+  if (matchQueue[currentMatchIndex]) {
+    matchQueue[currentMatchIndex].classList.add('active');
+  }
+}
+
+function createMatch(round, index, nextRound, roundNumber) {
+  const match = document.createElement('div');
+  match.className = 'match';
+  matchQueue.push(match);
+
+  const teamA = document.createElement('div');
+  teamA.className = 'team';
+  const nameA = document.createElement('input');
+  nameA.type = 'text';
+  const scoreA = document.createElement('input');
+  scoreA.type = 'number';
+  teamA.append(nameA, scoreA);
+
+  const teamB = document.createElement('div');
+  teamB.className = 'team';
+  const nameB = document.createElement('input');
+  nameB.type = 'text';
+  const scoreB = document.createElement('input');
+  scoreB.type = 'number';
+  teamB.append(nameB, scoreB);
+
+  if (roundNumber === 1) {
+    nameA.value = slots[index * 2];
+    nameB.value = slots[index * 2 + 1];
+  }
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Submit Result';
+
+  btn.onclick = () => {
+    const a = Number(scoreA.value);
+    const b = Number(scoreB.value);
+    if (isNaN(a) || isNaN(b)) return alert('Enter both totals');
+
+    const winner = a >= b ? nameA.value : nameB.value;
+
+    btn.textContent = 'Winner: ' + winner;
+    btn.classList.add('locked');
+    btn.disabled = true;
+
+    if (nextRound) {
+      const targetMatch = nextRound.querySelectorAll('.match')[Math.floor(index / 2)];
+      const targetInputs = targetMatch.querySelectorAll('.team input[type="text"]');
+      if (index % 2 === 0) {
+        targetInputs[0].value = winner;
+      } else {
+        targetInputs[1].value = winner;
+      }
+    } else {
+      const champ = document.createElement('div');
+      champ.className = 'champion';
+      champ.textContent = '🏆 Champion: ' + winner;
+      match.appendChild(champ);
+    }
+
+    currentMatchIndex++;
+    setActiveMatch();
+  };
+
+  match.append(teamA, teamB, btn);
+  round.appendChild(match);
+}
+
+const r1 = document.getElementById('round1');
+const r2 = document.getElementById('round2');
+const r3 = document.getElementById('round3');
+const r4 = document.getElementById('round4');
+
+for (let i = 0; i < 8; i++) createMatch(r1, i, r2, 1);
+for (let i = 0; i < 4; i++) createMatch(r2, i, r3, 2);
+for (let i = 0; i < 2; i++) createMatch(r3, i, r4, 3);
+createMatch(r4, 0, null, 4);
+
+setActiveMatch();
+
+</script>
+
+</body>
+</html>  align-items: center;
 }
 
 .match {
